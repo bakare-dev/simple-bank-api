@@ -15,5 +15,6 @@ cd simple-bank-api
 
 ## Prerequisites
 
-    •	PostgreSQL: Ensure PostgreSQL is installed on your system. If you’re using Docker, you can create the required PostgreSQL instance using the provided Makefile.
-    •	Migrate Tool: The migration tool migrate is required to handle database migrations. Install it following the instructions here.
+i. PostgreSQL: Ensure PostgreSQL is installed on your system. If you’re using Docker, you can create the required PostgreSQL instance using the provided Makefile.
+
+ii. Migrate Tool: The migration tool migrate is required to handle database migrations. Install it following the instructions here.

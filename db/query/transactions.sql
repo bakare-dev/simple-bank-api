@@ -34,7 +34,9 @@ WHERE id = $1;
 
 -- name: GetAccountBalance :one
 SELECT 
-  COALESCE(SUM(CASE WHEN type = 'Credit' THEN amount ELSE 0 END), 0) - 
-  COALESCE(SUM(CASE WHEN type = 'Debit' THEN amount ELSE 0 END), 0) AS balance
+  CAST(
+    COALESCE(SUM(CASE WHEN type = 'Credit' THEN amount ELSE 0 END), 0) - 
+    COALESCE(SUM(CASE WHEN type = 'Debit' THEN amount ELSE 0 END), 0)
+  AS DECIMAL(20, 2)) AS balance
 FROM "Transactions"
 WHERE account_id = $1;

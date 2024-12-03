@@ -58,15 +58,17 @@ func (q *Queries) DeleteTransaction(ctx context.Context, id int64) error {
 
 const getAccountBalance = `-- name: GetAccountBalance :one
 SELECT 
-  COALESCE(SUM(CASE WHEN type = 'Credit' THEN amount ELSE 0 END), 0) - 
-  COALESCE(SUM(CASE WHEN type = 'Debit' THEN amount ELSE 0 END), 0) AS balance
+  CAST(
+    COALESCE(SUM(CASE WHEN type = 'Credit' THEN amount ELSE 0 END), 0) - 
+    COALESCE(SUM(CASE WHEN type = 'Debit' THEN amount ELSE 0 END), 0)
+  AS DECIMAL(20, 2)) AS balance
 FROM "Transactions"
 WHERE account_id = $1
 `
 
-func (q *Queries) GetAccountBalance(ctx context.Context, accountID int64) (int32, error) {
+func (q *Queries) GetAccountBalance(ctx context.Context, accountID int64) (string, error) {
 	row := q.db.QueryRowContext(ctx, getAccountBalance, accountID)
-	var balance int32
+	var balance string
 	err := row.Scan(&balance)
 	return balance, err
 }
