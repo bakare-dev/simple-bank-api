@@ -20,6 +20,6 @@ test:
 	go test -v -cover ./...
 
 server: 
-	go run main.go
+	go run ./cmd/api/main.go
 
 .PHONY: createdb dropdb postgres migratedown migrateup sqlc test server
