@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/bakare-dev/simple-bank-api/util"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
 
@@ -50,7 +51,7 @@ func executeDeadlockTransfers(t *testing.T, store *Store, account1, account2 Acc
 			toAccountID = account1.ID
 		}
 
-		go func(fromID, toID int64) {
+		go func(fromID, toID uuid.UUID) {
 			_, err := store.TransferTx(context.Background(), TransferTxParams{
 				FromAccountID: fromID,
 				ToAccountID:   toID,

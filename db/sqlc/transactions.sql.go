@@ -6,6 +6,8 @@ package db
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 const createTransaction = `-- name: CreateTransaction :one
@@ -18,7 +20,7 @@ RETURNING id, account_id, type, status, amount, description, transaction_date
 `
 
 type CreateTransactionParams struct {
-	AccountID   int64             `json:"account_id"`
+	AccountID   uuid.UUID         `json:"account_id"`
 	Amount      string            `json:"amount"`
 	Description sql.NullString    `json:"description"`
 	Status      TransactionStatus `json:"status"`
@@ -51,7 +53,7 @@ DELETE FROM "Transactions"
 WHERE id = $1
 `
 
-func (q *Queries) DeleteTransaction(ctx context.Context, id int64) error {
+func (q *Queries) DeleteTransaction(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deleteTransaction, id)
 	return err
 }
@@ -66,7 +68,7 @@ FROM "Transactions"
 WHERE account_id = $1
 `
 
-func (q *Queries) GetAccountBalance(ctx context.Context, accountID int64) (string, error) {
+func (q *Queries) GetAccountBalance(ctx context.Context, accountID uuid.UUID) (string, error) {
 	row := q.db.QueryRowContext(ctx, getAccountBalance, accountID)
 	var balance string
 	err := row.Scan(&balance)
@@ -79,7 +81,7 @@ FROM "Transactions"
 WHERE id = $1
 `
 
-func (q *Queries) GetTransaction(ctx context.Context, id int64) (Transaction, error) {
+func (q *Queries) GetTransaction(ctx context.Context, id uuid.UUID) (Transaction, error) {
 	row := q.db.QueryRowContext(ctx, getTransaction, id)
 	var i Transaction
 	err := row.Scan(
@@ -100,7 +102,7 @@ FROM "Transactions"
 WHERE account_id = $1
 `
 
-func (q *Queries) GetUserAccountTransaction(ctx context.Context, accountID int64) (Transaction, error) {
+func (q *Queries) GetUserAccountTransaction(ctx context.Context, accountID uuid.UUID) (Transaction, error) {
 	row := q.db.QueryRowContext(ctx, getUserAccountTransaction, accountID)
 	var i Transaction
 	err := row.Scan(
@@ -133,7 +135,7 @@ func (q *Queries) ListTransactions(ctx context.Context, arg ListTransactionsPara
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Transaction
+	items := []Transaction{}
 	for rows.Next() {
 		var i Transaction
 		if err := rows.Scan(
@@ -166,7 +168,7 @@ RETURNING id, account_id, type, status, amount, description, transaction_date
 `
 
 type UpdateTransactionParams struct {
-	ID     int64             `json:"id"`
+	ID     uuid.UUID         `json:"id"`
 	Status TransactionStatus `json:"status"`
 }
 

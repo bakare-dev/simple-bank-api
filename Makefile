@@ -8,10 +8,10 @@ dropdb:
 	docker exec -it postgres dropdb simplebank
 
 migrateup: 
-	migrate -path db/migration -database "postgresql://<user>:<password>@localhost:5432/simplebank?sslmode=disable" -verbose up
+	migrate -path db/migration -database "postgresql://<user>:<password>@<host>:<port>/<dbname>?sslmode=disable" -verbose up
 
 migratedown:
-	migrate -path db/migration -database "postgresql://<user>:<password>@localhost:5432/simplebank?sslmode=disable" -verbose down
+	migrate -path db/migration -database "postgresql://<user>:<password>@<host>:<port>/<dbname>?sslmode=disable" -verbose down
 
 sqlc:
 	sqlc generate
@@ -19,4 +19,7 @@ sqlc:
 test:
 	go test -v -cover ./...
 
-.PHONY: createdb dropdb postgres migratedown migrateup sqlc test
+server: 
+	go run main.go
+
+.PHONY: createdb dropdb postgres migratedown migrateup sqlc test server

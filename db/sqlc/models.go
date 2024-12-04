@@ -6,6 +6,8 @@ import (
 	"database/sql"
 	"fmt"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type AccountType string
@@ -67,8 +69,8 @@ func (e *TransactionType) Scan(src interface{}) error {
 }
 
 type Account struct {
-	ID            int64       `json:"id"`
-	UserID        int64       `json:"user_id"`
+	ID            uuid.UUID   `json:"id"`
+	UserID        uuid.UUID   `json:"user_id"`
 	AccountNumber string      `json:"account_number"`
 	Type          AccountType `json:"type"`
 	Pin           string      `json:"pin"`
@@ -77,8 +79,8 @@ type Account struct {
 }
 
 type Transaction struct {
-	ID              int64             `json:"id"`
-	AccountID       int64             `json:"account_id"`
+	ID              uuid.UUID         `json:"id"`
+	AccountID       uuid.UUID         `json:"account_id"`
 	Type            TransactionType   `json:"type"`
 	Status          TransactionStatus `json:"status"`
 	Amount          string            `json:"amount"`
@@ -87,7 +89,7 @@ type Transaction struct {
 }
 
 type User struct {
-	ID          int64          `json:"id"`
+	ID          uuid.UUID      `json:"id"`
 	Name        string         `json:"name"`
 	Email       string         `json:"email"`
 	Password    string         `json:"password"`

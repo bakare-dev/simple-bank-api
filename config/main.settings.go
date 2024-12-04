@@ -2,10 +2,8 @@ package config
 
 import (
 	"log"
-	"os"
-	"strconv"
 
-	"github.com/joho/godotenv"
+	"github.com/spf13/viper"
 )
 
 type ServerConfig struct {
@@ -21,8 +19,7 @@ type DatabaseConfig struct {
 	Name     string
 }
 
-type InfrastructureConfig struct {
-}
+type InfrastructureConfig struct{}
 
 type SecurityConfig struct {
 	JWTSecret string
@@ -38,43 +35,32 @@ type Config struct {
 var Settings Config
 
 func LoadConfig() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Printf("No .env file found, loading environment variables from system")
+	viper.SetConfigName(".env")
+	viper.SetConfigType("env")
+	viper.AddConfigPath(".")
+	viper.AutomaticEnv()
+
+	if err := viper.ReadInConfig(); err != nil {
+		log.Printf("Error reading config file: %v", err)
 	}
 
 	Settings = Config{
 		Server: ServerConfig{
-			Host: getEnv("SERVER_HOST", "localhost"),
-			Port: getEnvAsInt("SERVER_PORT", 8080),
+			Host: viper.GetString("SERVER_HOST"),
+			Port: viper.GetInt("SERVER_PORT"),
 		},
 		Database: DatabaseConfig{
-			Host:     getEnv("DB_HOST", "localhost"),
-			Port:     getEnvAsInt("DB_PORT", 5432),
-			User:     getEnv("DB_USER", "postgres"),
-			Password: getEnv("DB_PASSWORD", ""),
-			Name:     getEnv("DB_NAME", "app"),
+			Host:     viper.GetString("DB_HOST"),
+			Port:     viper.GetInt("DB_PORT"),
+			User:     viper.GetString("DB_USER"),
+			Password: viper.GetString("DB_PASSWORD"),
+			Name:     viper.GetString("DB_NAME"),
 		},
 		Infrastructure: InfrastructureConfig{},
 		Security: SecurityConfig{
-			JWTSecret: getEnv("JWT_SECRET", "default-secret"),
+			JWTSecret: viper.GetString("JWT_SECRET"),
 		},
 	}
+
 	log.Println("Configuration loaded successfully")
-}
-
-func getEnv(key, defaultValue string) string {
-	value, exists := os.LookupEnv(key)
-	if !exists {
-		return defaultValue
-	}
-	return value
-}
-
-func getEnvAsInt(key string, defaultValue int) int {
-	valueStr := getEnv(key, "")
-	if value, err := strconv.Atoi(valueStr); err == nil {
-		return value
-	}
-	return defaultValue
 }

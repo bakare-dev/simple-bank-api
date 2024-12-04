@@ -5,6 +5,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 const createAccount = `-- name: CreateAccount :one
@@ -17,7 +19,7 @@ RETURNING id, user_id, account_number, type, pin, created_at, updated_at
 `
 
 type CreateAccountParams struct {
-	UserID        int64       `json:"user_id"`
+	UserID        uuid.UUID   `json:"user_id"`
 	AccountNumber string      `json:"account_number"`
 	Pin           string      `json:"pin"`
 	Type          AccountType `json:"type"`
@@ -48,7 +50,7 @@ DELETE FROM "Accounts"
 WHERE id = $1
 `
 
-func (q *Queries) DeleteAccount(ctx context.Context, id int64) error {
+func (q *Queries) DeleteAccount(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deleteAccount, id)
 	return err
 }
@@ -59,7 +61,7 @@ FROM "Accounts"
 WHERE id = $1
 `
 
-func (q *Queries) GetAccount(ctx context.Context, id int64) (Account, error) {
+func (q *Queries) GetAccount(ctx context.Context, id uuid.UUID) (Account, error) {
 	row := q.db.QueryRowContext(ctx, getAccount, id)
 	var i Account
 	err := row.Scan(
@@ -80,7 +82,7 @@ FROM "Accounts"
 WHERE user_id = $1
 `
 
-func (q *Queries) GetUserAccount(ctx context.Context, userID int64) (Account, error) {
+func (q *Queries) GetUserAccount(ctx context.Context, userID uuid.UUID) (Account, error) {
 	row := q.db.QueryRowContext(ctx, getUserAccount, userID)
 	var i Account
 	err := row.Scan(
@@ -113,7 +115,7 @@ func (q *Queries) ListAccounts(ctx context.Context, arg ListAccountsParams) ([]A
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Account
+	items := []Account{}
 	for rows.Next() {
 		var i Account
 		if err := rows.Scan(
@@ -146,8 +148,8 @@ RETURNING id, user_id, account_number, type, pin, created_at, updated_at
 `
 
 type UpdateAccountParams struct {
-	ID  int64  `json:"id"`
-	Pin string `json:"pin"`
+	ID  uuid.UUID `json:"id"`
+	Pin string    `json:"pin"`
 }
 
 func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error) {

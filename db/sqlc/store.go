@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+
+	"github.com/google/uuid"
 )
 
 type Store struct {
@@ -38,9 +40,9 @@ func (store *Store) execTx(ctx context.Context, fn func(*Queries) error) error {
 }
 
 type TransferTxParams struct {
-	FromAccountID int64  `json:"from_account_id"`
-	ToAccountID   int64  `json:"to_account_id"`
-	Amount        string `json:"amount"`
+	FromAccountID uuid.UUID `json:"from_account_id"`
+	ToAccountID   uuid.UUID `json:"to_account_id"`
+	Amount        string    `json:"amount"`
 }
 
 type TransferTxResult struct {
@@ -59,14 +61,9 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 	var result TransferTxResult
 
 	err := store.execTx(ctx, func(q *Queries) error {
-		var fromAccount, toAccount int64
-		if arg.FromAccountID < arg.ToAccountID {
-			fromAccount = arg.FromAccountID
-			toAccount = arg.ToAccountID
-		} else {
-			fromAccount = arg.ToAccountID
-			toAccount = arg.FromAccountID
-		}
+		var fromAccount, toAccount uuid.UUID
+		fromAccount = arg.ToAccountID
+		toAccount = arg.FromAccountID
 
 		_, err := q.GetAccount(ctx, fromAccount)
 		if err != nil {
