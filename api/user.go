@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	db "github.com/bakare-dev/simple-bank-api/db/sqlc"
+	"github.com/bakare-dev/simple-bank-api/util"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -23,11 +24,19 @@ func (server *Server) createUser(ctx *gin.Context) {
 		return
 	}
 
-	// to-do hash password
+	hashedPassword, err := util.HashPassword(req.Password)
+
+	println(hashedPassword)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
 	arg := db.CreateUserParams{
 		Name:        req.Name,
 		Email:       req.Email,
-		Password:    req.Password,
+		Password:    hashedPassword,
 		PhoneNumber: sql.NullString{String: req.Phoneno, Valid: req.Phoneno != ""},
 	}
 

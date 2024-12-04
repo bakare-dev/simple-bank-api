@@ -21,11 +21,11 @@ func TestMain(m *testing.M) {
 
 	dbDriver := "postgres"
 	dbSource := "postgresql://" +
-		config.Settings.Database.User + ":" +
-		config.Settings.Database.Password + "@" +
-		config.Settings.Database.Host + ":" +
-		strconv.Itoa(config.Settings.Database.Port) + "/" +
-		config.Settings.Database.Name + "?sslmode=disable"
+		config.Settings.Database.Test.User + ":" +
+		config.Settings.Database.Test.Password + "@" +
+		config.Settings.Database.Test.Host + ":" +
+		strconv.Itoa(config.Settings.Database.Test.Port) + "/" +
+		config.Settings.Database.Test.Name + "?sslmode=disable"
 
 	var err error
 
