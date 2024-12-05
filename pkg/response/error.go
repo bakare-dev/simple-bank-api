@@ -5,9 +5,7 @@ import (
 )
 
 func Error(c *gin.Context, status int, err error, message string) {
-	errorRes := map[string]interface{}{
-		"message": message,
-	}
+	errorRes := message
 
 	c.JSON(status, Response{Error: errorRes})
 }

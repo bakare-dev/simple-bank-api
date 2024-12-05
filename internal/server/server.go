@@ -55,7 +55,7 @@ func (s *Server) setupRoutes() {
 	s.router.Use(middleware.RouteProtectionMiddleware(authInterceptor))
 
 	s.router.GET("/", func(ctx *gin.Context) {
-		response.JSON(ctx, http.StatusOK, nil)
+		response.JSON(ctx, http.StatusOK, nil, "server running fine")
 	})
 
 	if err := s.MapRoutes(); err != nil {

@@ -48,8 +48,8 @@ func (repo *Repository[T]) Get(ctx context.Context, opts map[string]any) (*T, er
 	return &entity, nil
 }
 
-func (repo *Repository[T]) Update(ctx context.Context, entity *T) error {
-	if err := repo.db.WithContext(ctx).Save(entity).Error; err != nil {
+func (repo *Repository[T]) Update(ctx context.Context, id string, entity *T) error {
+	if err := repo.db.WithContext(ctx).Where("id = ?", id).Save(entity).Error; err != nil {
 		return err
 	}
 	return nil

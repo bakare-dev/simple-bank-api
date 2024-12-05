@@ -9,13 +9,20 @@ import (
 
 func RegisterUserRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	userRepo := userrepository.NewUserRepository(db)
-
-	userService := service.NewUserService(*userRepo)
+	profileRepo := userrepository.NewProfileRepository(db)
+	userService := service.NewUserService(*userRepo, *profileRepo)
+	userHandler := NewUserHandler(userService)
 
 	userRoutes := router.Group("/auth")
 	{
-		userRoutes.POST("/signup", func(ctx *gin.Context) {
-			handleCreateUser(ctx, userService)
-		})
+		userRoutes.POST("/signup", userHandler.HandleCreateUser)
+		userRoutes.POST("/profile", userHandler.HandleCreateProfile)
+		userRoutes.POST("/signin", userHandler.HandleLogin)
+		userRoutes.GET("/profile", userHandler.HandleGetProfile)
+		userRoutes.PUT("/activate", userHandler.HandleActivateUser)
+		userRoutes.PUT("/profile", userHandler.HandleUpdateProfile)
+		userRoutes.POST("/resend-otp", userHandler.HandleResendOtp)
+		userRoutes.PUT("/deactivate", userHandler.HandleDeactivateUser)
+		userRoutes.POST("/change-password", userHandler.HandleChangePassword)
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/bakare-dev/simple-bank-api/pkg/response"
 	"github.com/bakare-dev/simple-bank-api/pkg/util"
 	"github.com/gin-gonic/gin"
 )
@@ -19,15 +20,15 @@ func (a *AuthInterceptor) Middleware() gin.HandlerFunc {
 		authHeader := ctx.GetHeader("Authorization")
 
 		if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is missing or invalid"})
+			response.Error(ctx, http.StatusUnauthorized, nil, "Authorization header is missing or invalid")
 			ctx.Abort()
 			return
 		}
 
 		token := strings.TrimPrefix(authHeader, "Bearer ")
-		claims, err := util.VerifyPASETOToken(token)
+		claims, err := util.VerifyJWTToken(token)
 		if err != nil {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
+			response.Error(ctx, http.StatusUnauthorized, err, "Invalid or expired token")
 			ctx.Abort()
 			return
 		}
@@ -35,7 +36,19 @@ func (a *AuthInterceptor) Middleware() gin.HandlerFunc {
 		userID, userIDOk := claims["sub"].(string)
 		role, roleOk := claims["role"].(string)
 		if !userIDOk || !roleOk {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Token payload is invalid"})
+			response.Error(ctx, http.StatusUnauthorized, err, "Invalid or expired token")
+			ctx.Abort()
+			return
+		}
+
+		if ctx.Request.Method == http.MethodPost && ctx.Request.URL.Path == "/api/v1/auth/signout" {
+			err := util.InvalidateToken(token)
+			if err != nil {
+				response.Error(ctx, http.StatusInternalServerError, err, "Failed to sign out")
+				ctx.Abort()
+				return
+			}
+			response.JSON(ctx, http.StatusOK, nil, "Sign out successful")
 			ctx.Abort()
 			return
 		}

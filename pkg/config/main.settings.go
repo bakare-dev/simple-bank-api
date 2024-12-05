@@ -49,8 +49,8 @@ type InfrastructureConfig struct {
 }
 
 type SecurityConfig struct {
-	PasetoSecret string
-	BcryptCost   int
+	JWTSecret  string
+	BcryptCost int
 }
 
 type RedisConfig struct {
@@ -124,8 +124,8 @@ func LoadConfig() {
 			},
 		},
 		Security: SecurityConfig{
-			PasetoSecret: viper.GetString("PASETO_SECRET"),
-			BcryptCost:   viper.GetInt("BCRYPT_COST"),
+			JWTSecret:  viper.GetString("JWT_SECRET"),
+			BcryptCost: viper.GetInt("BCRYPT_COST"),
 		},
 	}
 

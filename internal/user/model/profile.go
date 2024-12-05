@@ -3,17 +3,25 @@ package model
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Profile struct {
-	gorm.Model
-	UserID      uint      `json:"user_id" gorm:"not null;uniqueIndex"`
+	ID          string    `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	UserID      string    `json:"user_id" gorm:"type:uuid;not null;uniqueIndex"`
 	FirstName   string    `json:"first_name" gorm:"size:255;not null"`
 	LastName    string    `json:"last_name" gorm:"size:255;not null"`
 	PhoneNumber string    `json:"phone_number" gorm:"size:20"`
-	ProfilePic  string    `json:"profile_pic" gorm:"size:255"`
-	DateOfBirth time.Time `json:"date_of_birth"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	DateOfBirth string    `json:"dob" gorm:"size:16;not null`
+	CreatedAt   time.Time `json:"createdAt" gorm:"autoCreateTime"`
+	UpdatedAt   time.Time `json:"updatedAt" gorm:"autoUpdateTime"`
+	User        User      `json:"user" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:UserID"`
+}
+
+func (profile *Profile) BeforeCreate(tx *gorm.DB) error {
+	if profile.ID == "" {
+		profile.ID = uuid.New().String()
+	}
+	return nil
 }
