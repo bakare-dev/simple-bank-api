@@ -26,3 +26,14 @@ func (repo *AccountRepository) PartialUpdate(ctx context.Context, id string, upd
 	}
 	return nil
 }
+
+func (repo *AccountRepository) GetAccountByAccountNumber(ctx context.Context, accountNumber string) (*model.Account, error) {
+	var account model.Account
+	if err := repo.db.WithContext(ctx).Where("number = ?", accountNumber).First(&account).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &account, nil
+}

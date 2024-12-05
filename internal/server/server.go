@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	coreHttp "github.com/bakare-dev/simple-bank-api/internal/core/http"
 	coreModel "github.com/bakare-dev/simple-bank-api/internal/core/model"
 	userHttp "github.com/bakare-dev/simple-bank-api/internal/user/http"
 	userModel "github.com/bakare-dev/simple-bank-api/internal/user/model"
@@ -91,5 +92,6 @@ func (s *Server) Run() error {
 func (s *Server) MapRoutes() error {
 	v1 := s.router.Group("/api/v1")
 	userHttp.RegisterUserRoutes(v1, s.DB)
+	coreHttp.RegisterCoreRoutes(v1, s.DB)
 	return nil
 }

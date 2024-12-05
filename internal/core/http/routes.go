@@ -12,6 +12,7 @@ import (
 
 func RegisterCoreRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	userRepo := userrepository.NewUserRepository(db)
+	profielRepo := userrepository.NewProfileRepository(db)
 	accountRepo := corerepository.NewAccountRepository(db)
 	transactionRepo := corerepository.NewTransactionRepository(db)
 
@@ -19,11 +20,13 @@ func RegisterCoreRoutes(router *gin.RouterGroup, db *gorm.DB) {
 
 	notificationService := mailerService.NewNotificationService(*mailer)
 
-	coreService := service.NewCoreService(*userRepo, *accountRepo, *transactionRepo, *notificationService)
+	coreService := service.NewCoreService(*userRepo, *profielRepo, *accountRepo, *transactionRepo, *notificationService)
 	coreHandler := NewCoreHandler(coreService)
 
 	coreRoutes := router.Group("/core")
 	{
-		coreRoutes.POST("/account", coreHandler.HandleCreateUser)
+		coreRoutes.POST("/account", coreHandler.HandleCreateAccount)
+		coreRoutes.GET("/account", coreHandler.HandleGetAccount)
+		coreRoutes.GET("/account-number", coreHandler.HandleGetAccountByAccountNumber)
 	}
 }

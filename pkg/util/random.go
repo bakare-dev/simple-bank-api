@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"math/rand"
 	"strings"
 	"time"
@@ -45,4 +46,9 @@ func RandomEmail() string {
 
 func RandomPhoneNumber() string {
 	return "+234" + RandomNumberString(8)
+}
+
+func GenerateAccountNumber() string {
+	randomPart := rng.Int63n(1e10)
+	return fmt.Sprintf("%010d", randomPart)
 }

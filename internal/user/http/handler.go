@@ -82,6 +82,10 @@ func (h *UserHandler) HandleLogin(ctx *gin.Context) {
 	user := loginDto.ToModel()
 	authenticatedUser, status, token, profile, err := h.userService.SignIn(ctx.Request.Context(), user)
 	if err != nil {
+		if authenticatedUser != nil {
+			response.JSON(ctx, status, gin.H{"userId": authenticatedUser}, err.Error())
+			return
+		}
 		response.Error(ctx, status, nil, err.Error())
 		return
 	}
