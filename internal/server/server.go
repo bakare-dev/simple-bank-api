@@ -17,12 +17,17 @@ import (
 )
 
 type Server struct {
-	DB     *gorm.DB
-	Redis  *redis.Client
-	router *gin.Engine
+	DB          *gorm.DB
+	Redis       *redis.Client
+	router      *gin.Engine
+	rateLimiter *middleware.ClientRateLimiter
 }
 
 func NewServer() *Server {
+	if config.Settings.Server.Env == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	db := util.ConnectDB()
 	if db == nil {
 		log.Fatalf("Database connection is nil")
@@ -37,10 +42,13 @@ func NewServer() *Server {
 		log.Fatalf("Redis connection is nil")
 	}
 
+	rateLimiter := middleware.NewClientRateLimiter(5, 10)
+
 	server := &Server{
-		DB:     db,
-		Redis:  redis,
-		router: gin.Default(),
+		DB:          db,
+		Redis:       redis,
+		router:      gin.Default(),
+		rateLimiter: rateLimiter,
 	}
 
 	server.setupRoutes()
@@ -50,8 +58,14 @@ func NewServer() *Server {
 func (s *Server) setupRoutes() {
 	_ = s.router.SetTrustedProxies(nil)
 
-	authInterceptor := middleware.NewAuthInterceptor()
+	s.router.Use(
+		middleware.CORSMiddleware(),
+		middleware.SecurityHeadersMiddleware(),
+		middleware.LoggerMiddleware(),
+		s.rateLimiter.GinMiddleware(),
+	)
 
+	authInterceptor := middleware.NewAuthInterceptor()
 	s.router.Use(middleware.RouteProtectionMiddleware(authInterceptor))
 
 	s.router.GET("/", func(ctx *gin.Context) {
