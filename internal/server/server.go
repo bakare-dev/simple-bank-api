@@ -61,7 +61,6 @@ func (s *Server) setupRoutes() {
 	s.router.Use(
 		middleware.CORSMiddleware(),
 		middleware.SecurityHeadersMiddleware(),
-		middleware.LoggerMiddleware(),
 		s.rateLimiter.GinMiddleware(),
 	)
 
