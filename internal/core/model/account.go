@@ -4,8 +4,8 @@ import (
 	"time"
 
 	user "github.com/bakare-dev/simple-bank-api/internal/user/model"
+	"github.com/bakare-dev/simple-bank-api/pkg/util"
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -24,10 +24,11 @@ func (account *Account) BeforeCreate(tx *gorm.DB) error {
 		account.ID = uuid.New().String()
 	}
 
-	hashedPin, err := bcrypt.GenerateFromPassword([]byte(account.Pin), bcrypt.DefaultCost)
+	hashedPin, err := util.HashPassword(account.Pin)
 	if err != nil {
 		return err
 	}
+
 	account.Pin = string(hashedPin)
 
 	return nil

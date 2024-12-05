@@ -28,5 +28,8 @@ func RegisterCoreRoutes(router *gin.RouterGroup, db *gorm.DB) {
 		coreRoutes.POST("/account", coreHandler.HandleCreateAccount)
 		coreRoutes.GET("/account", coreHandler.HandleGetAccount)
 		coreRoutes.GET("/account-number", coreHandler.HandleGetAccountByAccountNumber)
+		coreRoutes.GET("/balance", coreHandler.HandleGetAccountBalance)
+		coreRoutes.GET("/transactions", coreHandler.HandleGetAccountTransactions)
+		coreRoutes.GET("/transaction", coreHandler.HandleGetTransaction)
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type TransactionType string
@@ -26,7 +27,7 @@ type Transaction struct {
 	AccountID string            `json:"account_id" gorm:"type:uuid;not null"`
 	Amount    float64           `json:"amount" gorm:"type:decimal(20,2);not null"`
 	Type      TransactionType   `json:"type" gorm:"type:transaction_type;not null"`
-	Status    TransactionStatus `json:"status" gorm:"type:transaction_status;not null"`
+	Status    TransactionStatus `json:"status" gorm:"type:transaction_status;default:'processing';not null"`
 
 	CreatedAt time.Time `json:"createdAt" gorm:"autoCreateTime"`
 	UpdatedAt time.Time `json:"updatedAt" gorm:"autoUpdateTime"`
@@ -34,7 +35,7 @@ type Transaction struct {
 	Account Account `json:"account" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:AccountID"`
 }
 
-func (t *Transaction) BeforeCreate() error {
+func (t *Transaction) BeforeCreate(tx *gorm.DB) error {
 	if t.ID == "" {
 		t.ID = uuid.New().String()
 	}

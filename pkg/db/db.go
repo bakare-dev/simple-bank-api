@@ -81,7 +81,8 @@ func (repo *Repository[T]) GetAll(ctx context.Context, page, size int, opts ...m
 	return entities, nil
 }
 
-func (repo *Repository[T]) Count(ctx context.Context, total *int64, opts ...map[string]any) error {
+func (repo *Repository[T]) Count(ctx context.Context, opts ...map[string]any) (int64, error) {
+	var total int64
 	query := repo.db.WithContext(ctx).Model(new(T))
 
 	if len(opts) > 0 {
@@ -90,5 +91,10 @@ func (repo *Repository[T]) Count(ctx context.Context, total *int64, opts ...map[
 		}
 	}
 
-	return query.Count(total).Error
+	err := query.Count(&total).Error
+	if err != nil {
+		return 0, err
+	}
+
+	return total, nil
 }
