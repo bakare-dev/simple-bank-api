@@ -5,8 +5,9 @@ import (
 	"log"
 	"net/http"
 
+	coreModel "github.com/bakare-dev/simple-bank-api/internal/core/model"
 	userHttp "github.com/bakare-dev/simple-bank-api/internal/user/http"
-	"github.com/bakare-dev/simple-bank-api/internal/user/model"
+	userModel "github.com/bakare-dev/simple-bank-api/internal/user/model"
 	"github.com/bakare-dev/simple-bank-api/pkg/config"
 	"github.com/bakare-dev/simple-bank-api/pkg/middleware"
 	"github.com/bakare-dev/simple-bank-api/pkg/response"
@@ -33,7 +34,7 @@ func NewServer() *Server {
 		log.Fatalf("Database connection is nil")
 	}
 
-	if err := db.AutoMigrate(&model.User{}, &model.Profile{}); err != nil {
+	if err := db.AutoMigrate(&userModel.User{}, &userModel.Profile{}, &coreModel.Account{}, &coreModel.Transaction{}); err != nil {
 		log.Fatalf("Database migration failed: %v", err)
 	}
 

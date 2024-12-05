@@ -14,8 +14,10 @@ type Profile struct {
 	LastName    string    `json:"last_name" gorm:"size:255;not null"`
 	PhoneNumber string    `json:"phone_number" gorm:"size:20"`
 	DateOfBirth string    `json:"dob" gorm:"size:16;not null`
+
 	CreatedAt   time.Time `json:"createdAt" gorm:"autoCreateTime"`
 	UpdatedAt   time.Time `json:"updatedAt" gorm:"autoUpdateTime"`
+	
 	User        User      `json:"user" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:UserID"`
 }
 

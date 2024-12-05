@@ -20,13 +20,16 @@ const (
 )
 
 type User struct {
-	ID        string     `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	Email     string     `json:"email" gorm:"unique;not null;index:idx_user_email"`
-	Password  string     `json:"password" gorm:"not null"`
-	CreatedAt time.Time  `json:"createdAt" gorm:"autoCreateTime"`
-	UpdatedAt time.Time  `json:"updatedAt" gorm:"autoUpdateTime"`
-	Role      UserRole   `json:"role" gorm:"not null;default:'customer'"`
-	Status    UserStatus `json:"status" gorm:"not null;default:'not_activated'"`
+	ID       string `json:"id" gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	Email    string `json:"email" gorm:"unique;not null;index:idx_user_email"`
+	Password string `json:"password" gorm:"not null"`
+
+	CreatedAt time.Time `json:"createdAt" gorm:"autoCreateTime"`
+	UpdatedAt time.Time `json:"updatedAt" gorm:"autoUpdateTime"`
+
+	Role UserRole `json:"role" gorm:"not null;default:'customer'"`
+
+	Status UserStatus `json:"status" gorm:"not null;default:'not_activated'"`
 }
 
 func (user *User) BeforeCreate(tx *gorm.DB) error {

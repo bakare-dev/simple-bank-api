@@ -12,9 +12,12 @@ import (
 func RegisterUserRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	userRepo := userrepository.NewUserRepository(db)
 	profileRepo := userrepository.NewProfileRepository(db)
+
 	mailer := mailer.NewMailer()
 	notificationService := mailerService.NewNotificationService(*mailer)
+
 	userService := service.NewUserService(*userRepo, *profileRepo, *notificationService)
+	
 	userHandler := NewUserHandler(userService)
 
 	userRoutes := router.Group("/auth")
