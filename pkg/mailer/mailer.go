@@ -3,7 +3,6 @@ package mailer
 import (
 	"bytes"
 	"html/template"
-	"log"
 	"net/smtp"
 
 	"github.com/bakare-dev/simple-bank-api/pkg/config"
@@ -36,13 +35,11 @@ type MailInfo struct {
 func (m *Mailer) SendMail(info MailInfo) error {
 	tmpl, err := template.ParseFiles(info.TemplateFile)
 	if err != nil {
-		log.Printf("Error parsing template: %v", err)
 		return err
 	}
 
 	var body bytes.Buffer
 	if err := tmpl.Execute(&body, info.Data); err != nil {
-		log.Printf("Error executing template: %v", err)
 		return err
 	}
 
@@ -56,11 +53,10 @@ func (m *Mailer) SendMail(info MailInfo) error {
 
 	err = smtp.SendMail(m.smtpHost+":"+m.smtpPort, auth, info.Sender, info.Recipients, []byte(message))
 	if err != nil {
-		log.Printf("Error sending email: %v", err)
+
 		return err
 	}
 
-	log.Println("Email sent successfully to", info.Recipients)
 	return nil
 }
 

@@ -274,10 +274,6 @@ func (s *UserService) ResendOtp(ctx context.Context, userId string) (*string, in
 
 	otp := util.RandomNumberString(6)
 
-	fmt.Println(otp)
-
-	//to do add mailer
-
 	otpData := map[string]interface{}{
 		"otp":    otp,
 		"userId": userExists.ID,
@@ -286,6 +282,13 @@ func (s *UserService) ResendOtp(ctx context.Context, userId string) (*string, in
 	otpDataJSON, _ := json.Marshal(otpData)
 
 	_ = util.SetKey(context.Background(), fmt.Sprintf("otp:%s", otp), otpDataJSON, 300)
+
+	_ = s.notificationSvc.SendVerifyRegistration(mailerService.Message{
+		Recipients: []string{userExists.Email},
+		Data: map[string]interface{}{
+			"otp": otp,
+		},
+	})
 
 	return &userExists.Email, http.StatusOK, nil
 }

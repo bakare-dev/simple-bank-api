@@ -2,6 +2,8 @@ package service
 
 import (
 	"log"
+	"path/filepath"
+	"runtime"
 	"sync"
 
 	"github.com/bakare-dev/simple-bank-api/pkg/mailer"
@@ -15,6 +17,11 @@ func NewNotificationService(mailer mailer.Mailer) *NotificationService {
 	return &NotificationService{mailer: mailer}
 }
 
+func BasePath() string {
+	_, b, _, _ := runtime.Caller(0)
+	return filepath.Join(filepath.Dir(b), "../templates")
+}
+
 func (ns *NotificationService) SendVerifyRegistration(message Message) []Response {
 	var wg sync.WaitGroup
 	responses := make(chan Response, len(message.Recipients))
@@ -26,7 +33,7 @@ func (ns *NotificationService) SendVerifyRegistration(message Message) []Respons
 
 			info := mailer.MailInfo{
 				Sender:       "noreply@bakaredev.me",
-				TemplateFile: "../template/verify-registration.html",
+				TemplateFile: BasePath() + "/verify-registration.html",
 				Subject:      "Account Created Successfully",
 				Recipients:   []string{recipient},
 				Data:         message.Data,
