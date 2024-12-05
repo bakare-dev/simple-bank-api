@@ -3,6 +3,8 @@ package routes
 import (
 	userrepository "github.com/bakare-dev/simple-bank-api/internal/user/repository"
 	"github.com/bakare-dev/simple-bank-api/internal/user/service"
+	"github.com/bakare-dev/simple-bank-api/pkg/mailer"
+	mailerService "github.com/bakare-dev/simple-bank-api/pkg/mailer/service"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -10,7 +12,9 @@ import (
 func RegisterUserRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	userRepo := userrepository.NewUserRepository(db)
 	profileRepo := userrepository.NewProfileRepository(db)
-	userService := service.NewUserService(*userRepo, *profileRepo)
+	mailer := mailer.NewMailer()
+	notificationService := mailerService.NewNotificationService(*mailer)
+	userService := service.NewUserService(*userRepo, *profileRepo, *notificationService)
 	userHandler := NewUserHandler(userService)
 
 	userRoutes := router.Group("/auth")

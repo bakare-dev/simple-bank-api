@@ -56,6 +56,7 @@ func NewServer() *Server {
 }
 
 func (s *Server) setupRoutes() {
+
 	_ = s.router.SetTrustedProxies(nil)
 
 	s.router.Use(

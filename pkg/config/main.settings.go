@@ -45,12 +45,20 @@ type Production struct {
 }
 
 type InfrastructureConfig struct {
-	Redis RedisConfig
+	Redis  RedisConfig
+	Mailer Mailer
 }
 
 type SecurityConfig struct {
 	JWTSecret  string
 	BcryptCost int
+}
+
+type Mailer struct {
+	SmtpHost     string
+	SmtpPort     string
+	SmtpUser     string
+	SmtpPassword string
 }
 
 type RedisConfig struct {
@@ -121,6 +129,12 @@ func LoadConfig() {
 				Port:     viper.GetInt("REDIS_PORT"),
 				Password: viper.GetString("REDIS_PASSWORD"),
 				DB:       viper.GetInt("REDIS_DB"),
+			},
+			Mailer: Mailer{
+				SmtpHost:     viper.GetString("SMTP_HOST"),
+				SmtpPort:     viper.GetString("SMTP_PORT"),
+				SmtpUser:     viper.GetString("SMTP_USER"),
+				SmtpPassword: viper.GetString("SMTP_PASSWORD"),
 			},
 		},
 		Security: SecurityConfig{

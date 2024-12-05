@@ -8,16 +8,22 @@ import (
 
 	"github.com/bakare-dev/simple-bank-api/internal/user/model"
 	userrepository "github.com/bakare-dev/simple-bank-api/internal/user/repository"
+	mailerService "github.com/bakare-dev/simple-bank-api/pkg/mailer/service"
 	"github.com/bakare-dev/simple-bank-api/pkg/util"
 )
 
 type UserService struct {
-	userRepo    userrepository.UserRepository
-	profileRepo userrepository.ProfileRepository
+	userRepo        userrepository.UserRepository
+	profileRepo     userrepository.ProfileRepository
+	notificationSvc mailerService.NotificationService
 }
 
-func NewUserService(userRepo userrepository.UserRepository, profileRepo userrepository.ProfileRepository) *UserService {
-	return &UserService{userRepo: userRepo, profileRepo: profileRepo}
+func NewUserService(userRepo userrepository.UserRepository, profileRepo userrepository.ProfileRepository, notificationSvc mailerService.NotificationService) *UserService {
+	return &UserService{
+		userRepo:        userRepo,
+		profileRepo:     profileRepo,
+		notificationSvc: notificationSvc,
+	}
 }
 
 func (s *UserService) CreateUser(ctx context.Context, user *model.User) (*model.User, int, error) {
@@ -38,10 +44,6 @@ func (s *UserService) CreateUser(ctx context.Context, user *model.User) (*model.
 
 	otp := util.RandomNumberString(6)
 
-	fmt.Println(otp)
-
-	//to do add mailer
-
 	otpData := map[string]interface{}{
 		"otp":    otp,
 		"userId": user.ID,
@@ -52,6 +54,13 @@ func (s *UserService) CreateUser(ctx context.Context, user *model.User) (*model.
 	_ = util.SetKey(context.Background(), fmt.Sprintf("otp:%s", otp), otpDataJSON, 300)
 
 	createdUser.Password = ""
+
+	_ = s.notificationSvc.SendVerifyRegistration(mailerService.Message{
+		Recipients: []string{user.Email},
+		Data: map[string]interface{}{
+			"otp": otp,
+		},
+	})
 
 	return createdUser, http.StatusCreated, nil
 }

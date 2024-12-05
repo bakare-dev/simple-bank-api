@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .email-header {
+            background: #007bff;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
+            font-size: 24px;
+        }
+
+        .email-body {
+            padding: 20px;
+            color: #333333;
+            line-height: 1.6;
+        }
+
+        .email-footer {
+            background: #f4f4f9;
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            color: #777777;
+        }
+
+        .verify-button {
+            display: inline-block;
+            background: #28a745;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .otp {
+            display: inline-block;
+            background: #f8f9fa;
+            padding: 10px;
+            border: 1px dashed #28a745;
+            font-weight: bold;
+            margin-top: 10px;
+            border-radius: 4px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            Welcome to Our Service!
+        </div>
+        <div class="email-body">
+            <p>Hi,</p>
+            <p>Thank you for registering with us. To complete your registration, please verify your email address using
+                the OTP below:</p>
+            <div class="otp">{{.otp}}</div>
+            <p>If you have any issues, feel free to reach out to our support team.</p>
+            <p>Thank you,<br>The Team</p>
+        </div>
+        <div class="email-footer">
+            &copy; 2024 Your Company Name. All rights reserved.
+        </div>
+    </div>
+</body>
+
+</html>
